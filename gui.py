@@ -3,7 +3,7 @@ import tkinter as tk
 import sys
 import svm
 import cnn
-
+from tkinter import filedialog
 
 class StdoutRedirector():
     def __init__(self, text_area, master):
@@ -72,13 +72,45 @@ class Application(pygubu.TkApplication):
             cnn.cnn_train(train_size=tr_size, test_size=te_size)
     
     def predict_single(self):
-        print('Predicting Single!')
+        if self.model_list.get() == 'CNN':
+            if not cnn.model:
+                cnn.load_cnn_model()
+            
+            if not cnn.model:
+                print('You need to train the model first!')
+                return
+        else:
+            if not svm.model:
+                svm.load_svm_model()
+            
+            if not svm.model:
+                print('You need to train the model first!')
+                return
+
+        filename = filedialog.askopenfilename(title='Select Image File to recognize',
+            filetypes=(("jpeg files","*.jpg"),("Bitmaps","*.bmp")))
+        print('Predicting image from file {}'.format(filename))
+        if self.model_list.get() == 'CNN':
+            cnn.predict_single(filename)
+        else:
+            svm.predict_single(filename)
+        
 
     def predict_batch(self):
         print('Predicting Batch!')
 
     def confusion(self):
-        print('Displaying Confusion Matrix!')
+        test_size = 500
+        if self.test_size.get():
+            try:
+                test_size = int(self.test_size.get())
+            except:
+                print('Invalid size for Test Size, Using default = 500')
+
+        if self.model_list.get() == 'CNN':
+            cnn.show_confusion_matrix(test_size=test_size)
+        else:
+            svm.show_confusion_matrix(test_size=test_size)
 
 if __name__ == '__main__':
     root = tk.Tk()

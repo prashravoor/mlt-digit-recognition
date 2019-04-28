@@ -87,7 +87,6 @@
       <object class="ttk.Button" id="Button_3">
         <property name="command">train</property>
         <property name="compound">bottom</property>
-        <property name="cursor">based_arrow_down</property>
         <property name="text" translatable="yes">Train Model</property>
         <layout>
           <property name="column">0</property>

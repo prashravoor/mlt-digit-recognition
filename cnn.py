@@ -8,6 +8,7 @@ from sklearn import metrics
 from utils import *
 from collections import Counter
 import sys
+import seaborn as sn
 
 nb_epoch = 5
 batch_size = 128
@@ -75,6 +76,14 @@ def predict_class(model, data):
         return 'Not a number'
     return pred.argmax()
 
+def predict_single(filename):
+    img = read_image(
+                filename, (input_shape[1], input_shape[2])).reshape(input_shape)
+    plt.imshow(img.reshape(28, 28), cmap='Greys')
+    num = predict_class(model, img)
+    plt.title('Number Predicted: {}'.format(num))
+    plt.show()
+
 
 def evaluate(model, x_test, y_test):
     score = model.evaluate(x_test, y_test)
@@ -86,9 +95,21 @@ def confusion_matrix(model, labels, predicted):
     labels_conv = np.array([x.argmax() for x in labels])
     cm = metrics.confusion_matrix(labels_conv, pred_conv)
     print(cm)
-    plt.imshow(cm, cmap='Greys')
+    # plt.matshow(cm, cmap='Greys')
+    sn.heatmap(cm, annot=True)
     plt.show()
 
+
+def show_confusion_matrix(test_size=test_size):
+    if not model:
+        load_cnn_model()
+    if not model:
+        print('You need to train the model first!')
+        return
+
+    (x_train, y_train), (x_test, y_test) = load_data(10000, test_size, nb_classes)
+    predicted = model.predict(x_test)
+    confusion_matrix(model, y_test, predicted)
 
 def plot_graphs(history):
     # print(history.history.keys())
@@ -200,22 +221,10 @@ if __name__ == '__main__':
             print('Model loaded')
 
             print('Will predict class of digit in file {}'.format(args[2]))
-            img = read_image(
-                args[2], (input_shape[1], input_shape[2])).reshape(input_shape)
-            plt.imshow(img.reshape(28, 28), cmap='Greys')
-            num = predict_class(model, img)
-            plt.title('Number Predicted: {}'.format(num))
-            plt.show()
+            predict_single(args[2])
 
         elif str(args[1]).lower() == 'confusion':
-            test_size = 10000
-            load_cnn_model()
-            if not model:
-                print('You need to train the model first!')
-                exit()
-            (x_train, y_train), (x_test, y_test) = load_data(10000, test_size, nb_classes)
-            predicted = model.predict(x_test)
-            confusion_matrix(model, y_test, predicted)
+            show_confusion_matrix()
         else:
             print('Usage: {} {} {}'.format(
                 args[0], 'train | predict', '[params]'))
