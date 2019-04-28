@@ -1,6 +1,9 @@
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.utils.np_utils import to_categorical
+import tensorflow as tf
+from keras import backend as k
 
 def read_image(filename, img_shape):
     img = Image.open(filename)
@@ -30,3 +33,26 @@ def image_show(dataset, labels, num_to_show=8):
         plt.title('Number: {}'.format(label.argmax()))
     
     plt.show()
+
+
+def load_data(train_size, test_size, nb_classes):
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+    k.set_image_dim_ordering('th')
+
+    x_train = x_train[:train_size]
+    y_train = y_train[:train_size]
+    x_test = x_test[:test_size]
+    y_test = y_test[:test_size]
+
+    x_train = x_train.astype('float32')
+    x_test = x_test.astype('float32')
+
+    x_train /= 255
+    x_test /= 255
+
+    x_train = x_train[:, np.newaxis, :, :]
+    x_test = x_test[:, np.newaxis, :, :]
+    y_train = to_categorical(y_train, nb_classes)
+    y_test = to_categorical(y_test, nb_classes)
+
+    return (x_train, y_train), (x_test, y_test)

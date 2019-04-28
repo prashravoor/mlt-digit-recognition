@@ -1,9 +1,7 @@
 import tensorflow as tf
-from keras.utils.np_utils import to_categorical
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
 from keras.layers.core import Activation
-from keras import backend as k
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import metrics
@@ -27,29 +25,6 @@ pool_size = (2, 2)
 model = None
 train_size = 100
 test_size = 50
-
-
-def load_data(train_size, test_size):
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-    k.set_image_dim_ordering('th')
-
-    x_train = x_train[:train_size]
-    y_train = y_train[:train_size]
-    x_test = x_test[:test_size]
-    y_test = y_test[:test_size]
-
-    x_train = x_train.astype('float32')
-    x_test = x_test.astype('float32')
-
-    x_train /= 255
-    x_test /= 255
-
-    x_train = x_train[:, np.newaxis, :, :]
-    x_test = x_test[:, np.newaxis, :, :]
-    y_train = to_categorical(y_train, nb_classes)
-    y_test = to_categorical(y_test, nb_classes)
-
-    return (x_train, y_train), (x_test, y_test)
 
 
 def build_model(layer1_count, kernel_size, input_shape, pool_size, num_classes,
@@ -141,7 +116,7 @@ def cnn_train(train_size=train_size, test_size=test_size,
               pool_size=(2, 2), num_classes=nb_classes,
               batch_size=batch_size, num_epochs=nb_epoch,
               show_graph=True):
-    (x_train, y_train), (x_test, y_test) = load_data(train_size, test_size)
+    (x_train, y_train), (x_test, y_test) = load_data(train_size, test_size, num_classes)
     # image_show(x_train, y_train)
     print('Training Data Size: {}, Test Data Size: {}'.format(
         x_train.shape, x_test.shape))
@@ -238,7 +213,7 @@ if __name__ == '__main__':
             if not model:
                 print('You need to train the model first!')
                 exit()
-            (x_train, y_train), (x_test, y_test) = load_data(10000, test_size)
+            (x_train, y_train), (x_test, y_test) = load_data(10000, test_size, nb_classes)
             predicted = model.predict(x_test)
             confusion_matrix(model, y_test, predicted)
         else:
