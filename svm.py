@@ -31,6 +31,13 @@ def load_dataset(train_size, test_size, num_classes):
     (x_train, y_train), (x_test, y_test) = load_data(
         train_size, test_size, nb_classes)
 
+    if train_size < 100 or train_size > 60000:
+        print('Invalid size specified for train size, will use default 10000')
+        train_size = 10000
+    if test_size < 50 or test_size > 10000:
+        print('Invalid size specified for test size, will use default 1000')
+        test_size = 1000
+
     x_train = x_train.reshape(x_train.shape[0], input_shape)
     x_test = x_test.reshape(x_test.shape[0], input_shape)
     y_train = np.array([x.argmax() for x in y_train])
@@ -74,7 +81,6 @@ def svm_train(model=None, train_size=train_size, test_size=test_size):
 
 def predict_class(model, data):
     pred = model.predict_proba(data.reshape(1, input_shape))
-    print(pred)
     p_tmp = np.array(pred) < .8
     arr = np.array(pred)
     arr[p_tmp] = -1
@@ -98,6 +104,10 @@ def show_confusion_matrix(test_size=test_size):
     if not model:
         print('You need to train the model first!')
         return
+
+    if te_size < 50 or te_size > 10000:
+        print('Invalid size specified for test size, will use default 1000')
+        te_size = 1000
     
     (x_train, y_train), (x_test, y_test) = load_dataset(10000, test_size, nb_classes)
     predicted = model.predict(x_test)
@@ -167,7 +177,13 @@ if __name__ == '__main__':
             predict_single(args[2])
 
         elif str(args[1]).lower() == 'confusion':
-            show_confusion_matrix()
+            te_size = 1000
+            if len(args) == 3:
+                try:
+                    te_size = int(args[2])
+                except:
+                    print('Invalid size specified for test dataset, will use default 1000')
+            show_confusion_matrix(te_size)
         else:
             print('Usage: {} {} {}'.format(
                 args[0], 'train | predict', '[params]'))

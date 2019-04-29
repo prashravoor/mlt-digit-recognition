@@ -106,6 +106,10 @@ def show_confusion_matrix(test_size=test_size):
     if not model:
         print('You need to train the model first!')
         return
+    
+    if test_size < 50 or test_size > 10000:
+        print('Invalid size specified for test size, will use default 1000')
+        test_size = 1000
 
     (x_train, y_train), (x_test, y_test) = load_data(10000, test_size, nb_classes)
     predicted = model.predict(x_test)
@@ -137,6 +141,14 @@ def cnn_train(train_size=train_size, test_size=test_size,
               pool_size=(2, 2), num_classes=nb_classes,
               batch_size=batch_size, num_epochs=nb_epoch,
               show_graph=True):
+
+    if train_size < 100 or train_size > 60000:
+        print('Invalid size specified for train size, will use default 10000')
+        train_size = 10000
+    if test_size < 50 or test_size > 10000:
+        print('Invalid size specified for test size, will use default 1000')
+        test_size = 1000
+
     (x_train, y_train), (x_test, y_test) = load_data(train_size, test_size, num_classes)
     # image_show(x_train, y_train)
     print('Training Data Size: {}, Test Data Size: {}'.format(
@@ -224,7 +236,13 @@ if __name__ == '__main__':
             predict_single(args[2])
 
         elif str(args[1]).lower() == 'confusion':
-            show_confusion_matrix()
+            te_size = 1000
+            if len(args) == 3:
+                try:
+                    te_size = int(args[2])
+                except:
+                    print('Invalid size for Confusion matrix, will use default 1000')
+            show_confusion_matrix(te_size)
         else:
             print('Usage: {} {} {}'.format(
                 args[0], 'train | predict', '[params]'))
