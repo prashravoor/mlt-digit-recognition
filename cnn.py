@@ -76,9 +76,10 @@ def predict_class(model, data):
         return 'Not a number'
     return pred.argmax()
 
+
 def predict_single(filename):
     img = read_image(
-                filename, (input_shape[1], input_shape[2])).reshape(input_shape)
+        filename, (input_shape[1], input_shape[2])).reshape(input_shape)
     plt.imshow(img.reshape(28, 28), cmap='Greys')
     num = predict_class(model, img)
     plt.title('Number Predicted: {}'.format(num))
@@ -106,7 +107,7 @@ def show_confusion_matrix(test_size=test_size):
     if not model:
         print('You need to train the model first!')
         return
-    
+
     if test_size < 50 or test_size > 10000:
         print('Invalid size specified for test size, will use default 1000')
         test_size = 1000
@@ -114,6 +115,7 @@ def show_confusion_matrix(test_size=test_size):
     (x_train, y_train), (x_test, y_test) = load_data(10000, test_size, nb_classes)
     predicted = model.predict(x_test)
     confusion_matrix(model, y_test, predicted)
+
 
 def plot_graphs(history):
     # print(history.history.keys())
@@ -149,7 +151,8 @@ def cnn_train(train_size=train_size, test_size=test_size,
         print('Invalid size specified for test size, will use default 1000')
         test_size = 1000
 
-    (x_train, y_train), (x_test, y_test) = load_data(train_size, test_size, num_classes)
+    (x_train, y_train), (x_test, y_test) = load_data(
+        train_size, test_size, num_classes)
     # image_show(x_train, y_train)
     print('Training Data Size: {}, Test Data Size: {}'.format(
         x_train.shape, x_test.shape))
@@ -162,7 +165,7 @@ def cnn_train(train_size=train_size, test_size=test_size,
     print('Accuracy: {}, Score: {}'.format(score[1], score[0]))
     if show_graph:
         plot_graphs(history)
-    return model,history
+    return model, history
 
 
 def save_model(filename='cnn.hdf5'):
@@ -179,7 +182,7 @@ if __name__ == '__main__':
     args = sys.argv
     if len(args) == 1:
         print('Training and saving the model to file cnn.hdf5')
-        model,_ = cnn_train()
+        model, _ = cnn_train()
         save_model()
     else:
         if str(args[1]).lower() == 'train':
@@ -189,7 +192,7 @@ if __name__ == '__main__':
                 print('Training the model and saving to file {}'.format(file))
             else:
                 print('Training and saving the model to file cnn.hdf5')
-                model,_ = cnn_train()
+                model, _ = cnn_train()
                 save_model()
                 exit()
 
@@ -217,8 +220,8 @@ if __name__ == '__main__':
                     print('Invalid number specified for train size of test size!')
                     exit()
 
-            model,_ = cnn_train(train_size=tr_size,
-                              test_size=te_size, num_epochs=nepochs)
+            model, _ = cnn_train(train_size=tr_size,
+                                 test_size=te_size, num_epochs=nepochs)
             save_model(file)
         elif str(args[1]).lower() == 'predict':
             if not len(args) >= 3:

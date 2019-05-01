@@ -121,7 +121,7 @@
     <child>
       <object class="ttk.Button" id="Button_4">
         <property name="command">predict_batch</property>
-        <property name="text" translatable="yes">Predict Batch</property>
+        <property name="text" translatable="yes">Predict Live</property>
         <layout>
           <property name="column">3</property>
           <property name="propagate">True</property>

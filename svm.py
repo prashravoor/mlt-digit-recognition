@@ -15,10 +15,12 @@ input_shape = 784  # 28 * 28
 
 model = None
 
+
 def save_model(filename='svm.dump'):
     with open(filename, 'wb') as f:
         pickle.dump(model, f)
         f.close()
+
 
 def load_svm_model(filename='svm.dump'):
     global model
@@ -45,20 +47,22 @@ def load_dataset(train_size, test_size, num_classes):
 
     return (x_train, y_train), (x_test, y_test)
 
+
 def grid_search(train_size, test_size):
     (x_train, y_train), (x_test, y_test) = load_dataset(
         train_size, test_size, nb_classes)
-    
+
     svm = SVC()
-    parameters = [{'kernel': ['poly'], 'gamma': [1e-3, 1e-2],
-                       'C': [1, 10, 100], 'degree': range(1,5)}]
+    parameters = [{'kernel': ['poly', 'rbf', 'linear'], 'gamma': [1e-3, 1e-2, .1],
+                   'C': [1, 10, 100], 'degree': range(1, 5)}]
     print("Starting Grid Search")
     grid = GridSearchCV(svm, parameters, verbose=3)
-    grid.fit(x_train, y_train) #grid search learning the best parameters
+    grid.fit(x_train, y_train)  # grid search learning the best parameters
     print("Completed Grid Search. Best Parameters: ")
-    print (grid.best_params_)
+    print(grid.best_params_)
 
     return grid.best_estimator_
+
 
 def svm_train(model=None, train_size=train_size, test_size=test_size):
     (x_train, y_train), (x_test, y_test) = load_dataset(
@@ -88,6 +92,7 @@ def predict_class(model, data):
         return 'Not a Number'
     return arr.argmax()
 
+
 def confusion_matrix(model, labels, predicted):
     pred_conv = np.array(predicted)
     labels_conv = np.array(labels)
@@ -97,10 +102,11 @@ def confusion_matrix(model, labels, predicted):
     sn.heatmap(data=cm, annot=True)
     plt.show()
 
+
 def show_confusion_matrix(test_size=test_size):
     if not model:
         load_svm_model()
-    
+
     if not model:
         print('You need to train the model first!')
         return
@@ -108,14 +114,16 @@ def show_confusion_matrix(test_size=test_size):
     if te_size < 50 or te_size > 10000:
         print('Invalid size specified for test size, will use default 1000')
         te_size = 1000
-    
-    (x_train, y_train), (x_test, y_test) = load_dataset(10000, test_size, nb_classes)
+
+    (x_train, y_train), (x_test, y_test) = load_dataset(
+        10000, test_size, nb_classes)
     predicted = model.predict(x_test)
     confusion_matrix(model, y_test, predicted)
 
+
 def predict_single(filename):
     img = read_image(
-                filename, (28, 28)).reshape(input_shape)
+        filename, (28, 28)).reshape(input_shape)
     plt.imshow(img.reshape(28, 28), cmap='Greys')
     num = predict_class(model, img)
     plt.title('Number Predicted: {}'.format(num))
@@ -139,7 +147,7 @@ if __name__ == '__main__':
                 model = svm_train()
                 save_model()
                 exit()
-            
+
             tr_size = train_size
             te_size = test_size
             if len(args) >= 5:
@@ -156,7 +164,7 @@ if __name__ == '__main__':
                     model = grid_search(tr_size, te_size)
             if not model:
                 model = svm_train(train_size=tr_size,
-                                test_size=te_size)
+                                  test_size=te_size)
             else:
                 model = svm_train(train_size=tr_size, test_size=te_size)
             save_model(file)
@@ -182,7 +190,8 @@ if __name__ == '__main__':
                 try:
                     te_size = int(args[2])
                 except:
-                    print('Invalid size specified for test dataset, will use default 1000')
+                    print(
+                        'Invalid size specified for test dataset, will use default 1000')
             show_confusion_matrix(te_size)
         else:
             print('Usage: {} {} {}'.format(

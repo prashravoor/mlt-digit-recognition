@@ -5,15 +5,16 @@ import svm
 import cnn
 from tkinter import filedialog
 
+
 class StdoutRedirector():
     def __init__(self, text_area, master):
         self.text_area = text_area
         self.master = master
 
-    def write(self,line):
+    def write(self, line):
         self.text_area.insert('end', line)
         self.text_area.see('end')
-    
+
     def flush(self):
         self.master.update_idletasks()
 
@@ -37,15 +38,15 @@ class Application(pygubu.TkApplication):
         self.test_size = builder.get_object('te_size')
         out = StdoutRedirector(self.output, self.toplevel)
         sys.stdout = out
-    
+
     def run(self):
         self.toplevel.mainloop()
-    
+
     def on_close_window(self, event=None):
         print('On close window')
         # Call destroy on toplevel to finish program
         self.toplevel.master.destroy()
-    
+
     def clear_text(self):
         self.output.delete("1.0", 'end')
 
@@ -56,45 +57,46 @@ class Application(pygubu.TkApplication):
             try:
                 tr_size = int(self.train_size['text'])
             except:
-                print('Invalid Integer entered for train size "{}", Using default = {}'.format(self.train_size['text'], tr_size))
-        
+                print('Invalid Integer entered for train size "{}", Using default = {}'.format(
+                    self.train_size['text'], tr_size))
+
         if self.test_size['text']:
             try:
                 te_size = int(self.test_size['text'])
             except:
-                print('Invalid Integer entered for test size "{}", Using default = {}'.format(self.test_size['text'], te_size))
-                
+                print('Invalid Integer entered for test size "{}", Using default = {}'.format(
+                    self.test_size['text'], te_size))
+
         algo = self.model_list.get()
         print('Starting to train Model using {}!'.format(algo))
         if str(algo).lower() == 'svm':
             svm.svm_train(train_size=tr_size, test_size=te_size)
         else:
             cnn.cnn_train(train_size=tr_size, test_size=te_size)
-    
+
     def predict_single(self):
         if self.model_list.get() == 'CNN':
             if not cnn.model:
                 cnn.load_cnn_model()
-            
+
             if not cnn.model:
                 print('You need to train the model first!')
                 return
         else:
             if not svm.model:
                 svm.load_svm_model()
-            
+
             if not svm.model:
                 print('You need to train the model first!')
                 return
 
         filename = filedialog.askopenfilename(title='Select Image File to recognize',
-            filetypes=(("jpeg files","*.jpg"),("Bitmaps","*.bmp")))
+                                              filetypes=(("jpeg files", "*.jpg"), ("Bitmaps", "*.bmp")))
         print('Predicting image from file {}'.format(filename))
         if self.model_list.get() == 'CNN':
             cnn.predict_single(filename)
         else:
             svm.predict_single(filename)
-        
 
     def predict_batch(self):
         print('Predicting Batch!')
@@ -111,6 +113,7 @@ class Application(pygubu.TkApplication):
             cnn.show_confusion_matrix(test_size=test_size)
         else:
             svm.show_confusion_matrix(test_size=test_size)
+
 
 if __name__ == '__main__':
     root = tk.Tk()
