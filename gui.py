@@ -99,7 +99,28 @@ class Application(pygubu.TkApplication):
             svm.predict_single(filename)
 
     def predict_batch(self):
-        print('Predicting Batch!')
+        if self.model_list.get() == 'CNN':
+            if not cnn.model:
+                cnn.load_cnn_model()
+
+            if not cnn.model:
+                print('You need to train the model first!')
+                return
+        else:
+            if not svm.model:
+                svm.load_svm_model()
+
+            if not svm.model:
+                print('You need to train the model first!')
+                return
+        
+        filenames = filedialog.askopenfilenames(title='Select Image Files to recognize',
+                                                filetypes=(("jpeg files", "*.jpg"), ("Bitmaps", "*.bmp")))
+        if self.model_list.get() == 'CNN':
+            cnn.predict_multiple(filenames)
+        else:
+            svm.predict_multiple(filenames)
+
 
     def confusion(self):
         test_size = 500

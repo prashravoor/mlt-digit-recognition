@@ -9,9 +9,11 @@ from utils import *
 from collections import Counter
 import sys
 import seaborn as sn
+from matplotlib import gridspec
+import math
 
-nb_epoch = 5
-batch_size = 128
+nb_epoch = 20
+batch_size = 32
 optimizer = 'adam'
 validation_split = .2
 nb_classes = 10
@@ -85,6 +87,24 @@ def predict_single(filename):
     plt.title('Number Predicted: {}'.format(num))
     plt.show()
 
+def predict_multiple(filenames):
+    if len(filenames) == 1:
+        predict_single(filenames[0])
+    else:
+        cols = 5
+        rows = math.ceil(len(filenames)/5.0)
+        gs = gridspec.GridSpec(rows, cols)
+        fig = plt.figure()
+        n = 0
+        for file in filenames:
+            img = read_image(file, (input_shape[1], input_shape[2])).reshape(input_shape)
+            ax = fig.add_subplot(gs[n])
+            n += 1
+            print(n)
+            num = predict_class(model, img)
+            ax.imshow(img.reshape(28,28), cmap='Greys')
+            ax.set_title('Number Predicted: {}'.format(num))
+        plt.show()
 
 def evaluate(model, x_test, y_test):
     score = model.evaluate(x_test, y_test)

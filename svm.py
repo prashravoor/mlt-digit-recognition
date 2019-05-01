@@ -7,6 +7,8 @@ from utils import *
 import pickle
 from sklearn import metrics
 import sys
+import math
+from matplotlib import gridspec
 
 train_size = 300
 test_size = 100
@@ -56,7 +58,7 @@ def grid_search(train_size, test_size):
     parameters = [{'kernel': ['poly', 'rbf', 'linear'], 'gamma': [1e-3, 1e-2, .1],
                    'C': [1, 10, 100], 'degree': range(1, 5)}]
     print("Starting Grid Search")
-    grid = GridSearchCV(svm, parameters, verbose=3)
+    grid = GridSearchCV(svm, parameters, verbose=3, n_jobs=4)
     grid.fit(x_train, y_train)  # grid search learning the best parameters
     print("Completed Grid Search. Best Parameters: ")
     print(grid.best_params_)
@@ -69,7 +71,7 @@ def svm_train(model=None, train_size=train_size, test_size=test_size):
         train_size, test_size, nb_classes)
 
     if not model:
-        svm = SVC(kernel='poly', gamma='scale', degree=2, C=10,
+        svm = SVC(kernel='rbf', gamma=.01, degree=1, C=10,
                   probability=True, random_state=42)
     else:
         svm = model
@@ -130,6 +132,27 @@ def predict_single(filename):
     plt.show()
 
 
+def predict_multiple(filenames):
+    if len(filenames) == 1:
+        predict_single(filenames[0])
+    else:
+        cols = 5
+        rows = math.ceil(len(filenames)/5.0)
+        gs = gridspec.GridSpec(rows, cols)
+        fig = plt.figure()
+        n = 0
+        for file in filenames:
+            img = read_image(file, (28, 28)).reshape(input_shape)
+            ax = fig.add_subplot(gs[n])
+            n += 1
+            print(n)
+            num = predict_class(model, img)
+            ax.imshow(img.reshape(28,28), cmap='Greys')
+            ax.set_title('Number Predicted: {}'.format(num))
+        plt.show()
+
+    
+
 if __name__ == '__main__':
     args = sys.argv
     if len(args) == 1:
@@ -158,15 +181,13 @@ if __name__ == '__main__':
                     tr_size = int(args[3])
                     te_size = int(args[4])
                 except:
-                    print('Invalid number specified for train size of test size!')
+                    print('Invalid number specified for train size or test size!')
                     exit()
                 if len(args) == 6 and args[5].lower() == 'search':
                     model = grid_search(tr_size, te_size)
-            if not model:
-                model = svm_train(train_size=tr_size,
-                                  test_size=te_size)
-            else:
-                model = svm_train(train_size=tr_size, test_size=te_size)
+
+            model = svm_train(train_size=tr_size,
+                              test_size=te_size)
             save_model(file)
         elif str(args[1]).lower() == 'predict':
             if not len(args) >= 3:

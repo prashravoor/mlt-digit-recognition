@@ -4,7 +4,6 @@ import time
 import matplotlib.pyplot as plt
 
 # Find time taken to train and predict varying sets of images using SVM
-
 train_times = []
 train_times_c = []
 test_size = 100
@@ -16,7 +15,7 @@ for i in ds_size:
     train_times.append((i, end-start))
 
     start = time.time()
-    cnn.cnn_train(train_size=i, test_size=test_size)
+    cnn.cnn_train(train_size=i, test_size=test_size, show_graph=False)
     end = time.time()
     train_times_c.append((i, end-start))
 
@@ -55,8 +54,9 @@ plt.ylabel('Time (s)')
 plt.legend(['SVM', 'CNN'])
 plt.show()
 
+
 predict_times = list(zip(*predict_times))
-predict_times = list(zip(*predict_times_c))
+predict_times_c = list(zip(*predict_times_c))
 plt.plot(predict_times[0], predict_times[1])
 plt.plot(predict_times_c[0], predict_times_c[1])
 plt.title('Prediction Times for SVM vs CNN')
