@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 from keras.utils.np_utils import to_categorical
 import tensorflow as tf
 from keras import backend as k
+import cv2
 
 def read_image(filename, img_shape):
-    img = Image.open(filename)
-    img = img.convert(mode='L')  # Convert to grayscale
-    img = img.resize(img_shape)
+    img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+    print(img)
+    img = cv2.resize(img, img_shape, interpolation=cv2.INTER_AREA)
+    (thresh, img) = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
     arr = np.array(img)
     # Normalize the values to be between 0 and 1. 255 is max value

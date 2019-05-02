@@ -87,7 +87,7 @@ def svm_train(model=None, train_size=train_size, test_size=test_size):
 
 def predict_class(model, data):
     pred = model.predict_proba(data.reshape(1, input_shape))
-    p_tmp = np.array(pred) < .8
+    p_tmp = np.array(pred) < .1
     arr = np.array(pred)
     arr[p_tmp] = -1
     if max(arr[0]) == -1:
@@ -126,9 +126,11 @@ def show_confusion_matrix(test_size=test_size):
 def predict_single(filename):
     img = read_image(
         filename, (28, 28)).reshape(input_shape)
-    plt.imshow(img.reshape(28, 28), cmap='Greys')
+    plt.imshow(img.reshape(28, 28), cmap='Greys', interpolation='nearest')
     num = predict_class(model, img)
     plt.title('Number Predicted: {}'.format(num))
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
     plt.show()
 
 
@@ -147,8 +149,10 @@ def predict_multiple(filenames):
             n += 1
             print(n)
             num = predict_class(model, img)
-            ax.imshow(img.reshape(28,28), cmap='Greys')
+            ax.imshow(img.reshape(28,28), cmap='Greys', interpolation='nearest')
             ax.set_title('Number Predicted: {}'.format(num))
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
         plt.show()
 
     
@@ -214,6 +218,29 @@ if __name__ == '__main__':
                     print(
                         'Invalid size specified for test dataset, will use default 1000')
             show_confusion_matrix(te_size)
+        elif args[1].lower() == 'showrand':
+            if not model:
+                load_svm_model()
+                if not model:
+                    print('You need to train the model first!')
+                    exit()
+
+            (x,y), (p,q) = load_dataset(30000, 10000, 10)
+            cols = 4
+            rows = 2
+            gs = gridspec.GridSpec(rows, cols)
+            fig = plt.figure()
+            n = 0
+            for _ in range(8):
+                ax = fig.add_subplot(gs[n])
+                n += 1
+                z = np.random.randint(0, len(x))
+                num = predict_class(model, x[z])
+                ax.imshow(x[z].reshape(28,28), cmap='Greys')
+                ax.set_title('Number Predicted: {}'.format(num))
+                ax.get_xaxis().set_visible(False)
+                ax.get_yaxis().set_visible(False)
+            plt.show()
         else:
             print('Usage: {} {} {}'.format(
                 args[0], 'train | predict', '[params]'))

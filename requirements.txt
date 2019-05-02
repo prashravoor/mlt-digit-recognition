@@ -5,3 +5,5 @@ numpy_utils
 tensorflow
 keras
 seaborn
+sklearn
+opencv-python
