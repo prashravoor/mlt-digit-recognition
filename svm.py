@@ -87,7 +87,7 @@ def svm_train(model=None, train_size=train_size, test_size=test_size):
 
 def predict_class(model, data):
     pred = model.predict_proba(data.reshape(1, input_shape))
-    p_tmp = np.array(pred) < .1
+    p_tmp = np.array(pred) < .5
     arr = np.array(pred)
     arr[p_tmp] = -1
     if max(arr[0]) == -1:
@@ -129,8 +129,7 @@ def predict_single(filename):
     plt.imshow(img.reshape(28, 28), cmap='Greys', interpolation='nearest')
     num = predict_class(model, img)
     plt.title('Number Predicted: {}'.format(num))
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
+    plt.axis('off')
     plt.show()
 
 

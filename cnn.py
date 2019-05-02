@@ -24,6 +24,7 @@ layer2_count = 50
 layer3_count = 500
 kernel_size = 5
 pool_size = (2, 2)
+dropout = .2
 
 model = None
 train_size = 100
@@ -31,7 +32,7 @@ test_size = 50
 
 
 def build_model(layer1_count, kernel_size, input_shape, pool_size, num_classes,
-                layer2_count, layer3_count):
+                layer2_count, layer3_count, dropout=dropout):
     model = Sequential()
 
     model.add(Conv2D(layer1_count, kernel_size=kernel_size,
@@ -42,7 +43,7 @@ def build_model(layer1_count, kernel_size, input_shape, pool_size, num_classes,
     model.add(Conv2D(layer2_count, kernel_size=kernel_size, padding='same'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=pool_size, strides=pool_size))
-    # model.add(Dropout(0.2))
+    model.add(Dropout(dropout))
 
     model.add(Flatten())  # Flattening the 2D arrays for fully connected layers
     model.add(Dense(layer3_count))
@@ -72,7 +73,8 @@ def train(model, x_train, y_train, batch_size, num_epochs):
 
 def predict_class(model, data):
     pred = model.predict(data.reshape((1, 1, 28, 28)))
-    p_tmp = pred < .3
+    print(pred)
+    p_tmp = pred < .98
     pred[p_tmp] = -1
     if max(pred[0]) == -1:
         return 'Not a number'
@@ -164,7 +166,7 @@ def cnn_train(train_size=train_size, test_size=test_size,
               layer3_count=layer3_count, kernel_size=kernel_size,
               input_shape=input_shape,
               pool_size=(2, 2), num_classes=nb_classes,
-              batch_size=batch_size, num_epochs=nb_epoch,
+              batch_size=batch_size, num_epochs=nb_epoch, dropout=dropout,
               show_graph=True):
 
     if train_size < 100 or train_size > 60000:
@@ -182,7 +184,8 @@ def cnn_train(train_size=train_size, test_size=test_size,
     model = build_model(layer1_count=layer1_count,
                         kernel_size=kernel_size, input_shape=input_shape,
                         pool_size=pool_size, num_classes=num_classes,
-                        layer2_count=layer2_count, layer3_count=layer3_count)
+                        layer2_count=layer2_count, layer3_count=layer3_count,
+                        dropout=dropout)
     history = train(model, x_train, y_train, batch_size, num_epochs)
     score = evaluate(model, x_test, y_test)
     print('Accuracy: {}, Score: {}'.format(score[1], score[0]))

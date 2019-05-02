@@ -8,7 +8,6 @@ import cv2
 
 def read_image(filename, img_shape):
     img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
-    print(img)
     img = cv2.resize(img, img_shape, interpolation=cv2.INTER_AREA)
     (thresh, img) = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 

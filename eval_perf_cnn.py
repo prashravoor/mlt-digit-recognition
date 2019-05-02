@@ -12,6 +12,7 @@ layer3_count = 500
 batch_size = 128
 epochs = 5
 pool_size = 2
+dropout=.2
 
 
 def plot_graph(data, title, x, y):
@@ -21,7 +22,6 @@ def plot_graph(data, title, x, y):
     plt.xlabel(x)
     plt.ylabel(y)
     plt.show()
-
 
 # Number of epochs
 e_data = []
@@ -116,3 +116,16 @@ plot_graph(l3_data, 'Varying Layer 3 of Neuron Count',
 plot_graph(k_data, 'Varying Kernel Size', 'Kernel Size (x * x)', 'Accuracy')
 plot_graph(b_data, 'Varying Batch Size', 'Batch Size', 'Accuracy')
 plot_graph(p_data, 'Varying Pool Size', 'Pool Size (x * x)', 'Accuracy')
+
+
+d_data = []
+for i in [0, .05, .1, .15, .2, .25, .3, .4, .5]:
+    _, history = cnn.cnn_train(train_size=train_size, test_size=test_size,
+                               kernel_size=kernel_size, pool_size=(
+                                   pool_size, pool_size), num_epochs=epochs,
+                               layer2_count=layer2_count, layer3_count=layer3_count,
+                               layer1_count=layer1_count, batch_size=batch_size, show_graph=False,
+                               dropout=i)
+    d_data.append((i, history.history['acc'][-1]))
+
+plot_graph(d_data, 'Varying value of dropout', 'Dropout Percentage', 'Accuracy')
