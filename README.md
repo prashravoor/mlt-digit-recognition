@@ -13,6 +13,8 @@ You can start the GUI using `python gui.py`. The GUI has configurable parameters
 * Test Data set size - 50 - 10000
 
 There are also actions to train the model (model is automatically saved to a file), predict a single image, or generate a confusion matrix using the value specified in the `Test Size` field. <br>
+In addition, "Predict Batch" allows selection of multiple images in one go, and displays results for all of them on the screen. <br>
+"Predict Live" will open the webcam. The digit can be shown to the screen, and press `s` to capture the image. This image will be classified and the result is diplayed on the screen. <br>
 
 Alternatively, you can run the CLI using the corresponding python files for CNN or SVM <br>
 * `python cnn.py {train | predict | confusion} {filename to load/save} {Train Dataset Size} {Test Dataset Size} {Number of Epochs}`
@@ -33,4 +35,4 @@ All parameters, except the first one (train/predict/confusion) are optional. Sui
   
 ## Generating Performance Graphs
 Running `python eval_perf_cnn.py` and `python eval_perf_svm.py` generate performance and parameter evaluation graphs for CNN and SVM models respectively <br>
-Both could take a LOT of time to complete. CNN script will additionally produce graphs that show how varying parameters affect accuracy. <br>
+Both could take a LOT of time to complete (Up to 6 hours for CNN). CNN script will additionally produce graphs that show how varying parameters affect accuracy. <br>

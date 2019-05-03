@@ -4,6 +4,7 @@ import sys
 import svm
 import cnn
 from tkinter import filedialog
+import cv2
 
 
 class StdoutRedirector():
@@ -113,7 +114,7 @@ class Application(pygubu.TkApplication):
             if not svm.model:
                 print('You need to train the model first!')
                 return
-        
+
         filenames = filedialog.askopenfilenames(title='Select Image Files to recognize',
                                                 filetypes=(("jpeg files", "*.jpg"), ("Bitmaps", "*.bmp")))
         if self.model_list.get() == 'CNN':
@@ -121,6 +122,41 @@ class Application(pygubu.TkApplication):
         else:
             svm.predict_multiple(filenames)
 
+    def predict_live(self):
+        if self.model_list.get() == 'CNN':
+            if not cnn.model:
+                cnn.load_cnn_model()
+
+            if not cnn.model:
+                print('You need to train the model first!')
+                return
+        else:
+            if not svm.model:
+                svm.load_svm_model()
+
+            if not svm.model:
+                print('You need to train the model first!')
+                return
+
+        cap = cv2.VideoCapture(0)
+        filename = 'capture.jpg'
+        while(True):
+            # Capture frame-by-frame
+            ret, frame = cap.read()
+            # Display the resulting frame
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(1) & 0xFF == ord('s'):
+                cv2.imwrite(filename, frame)
+                break
+
+        # When everything done, release the capture
+        cap.release()
+        cv2.destroyAllWindows()
+
+        if self.model_list.get() == 'CNN':
+            cnn.predict_single(filename)
+        else:
+            svm.predict_single(filename)
 
     def confusion(self):
         test_size = 500

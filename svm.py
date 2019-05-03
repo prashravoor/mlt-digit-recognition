@@ -113,9 +113,9 @@ def show_confusion_matrix(test_size=test_size):
         print('You need to train the model first!')
         return
 
-    if te_size < 50 or te_size > 10000:
+    if test_size < 50 or test_size > 10000:
         print('Invalid size specified for test size, will use default 1000')
-        te_size = 1000
+        test_size = 1000
 
     (x_train, y_train), (x_test, y_test) = load_dataset(
         10000, test_size, nb_classes)
@@ -148,13 +148,13 @@ def predict_multiple(filenames):
             n += 1
             print(n)
             num = predict_class(model, img)
-            ax.imshow(img.reshape(28,28), cmap='Greys', interpolation='nearest')
+            ax.imshow(img.reshape(28, 28), cmap='Greys',
+                      interpolation='nearest')
             ax.set_title('Number Predicted: {}'.format(num))
             ax.get_xaxis().set_visible(False)
             ax.get_yaxis().set_visible(False)
         plt.show()
 
-    
 
 if __name__ == '__main__':
     args = sys.argv
@@ -224,7 +224,7 @@ if __name__ == '__main__':
                     print('You need to train the model first!')
                     exit()
 
-            (x,y), (p,q) = load_dataset(30000, 10000, 10)
+            (x, y), (p, q) = load_dataset(30000, 10000, 10)
             cols = 4
             rows = 2
             gs = gridspec.GridSpec(rows, cols)
@@ -235,7 +235,7 @@ if __name__ == '__main__':
                 n += 1
                 z = np.random.randint(0, len(x))
                 num = predict_class(model, x[z])
-                ax.imshow(x[z].reshape(28,28), cmap='Greys')
+                ax.imshow(x[z].reshape(28, 28), cmap='Greys')
                 ax.set_title('Number Predicted: {}'.format(num))
                 ax.get_xaxis().set_visible(False)
                 ax.get_yaxis().set_visible(False)
